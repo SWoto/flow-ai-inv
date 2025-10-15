@@ -23,7 +23,7 @@ jobs:
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::${{ secrets.MY_AWS_ACCES_KEY }}:role/flow-ai-role-github-actions
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/flow-ai-role-github-actions
           aws-region: ${{ env.AWS_REGION }}
           role-session-name: github-actions-flow-ai-session
 
