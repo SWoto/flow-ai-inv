@@ -3,6 +3,16 @@ provider "aws" {
   region = "sa-east-1"
 }
 
+terraform {
+  backend "s3" {
+    bucket         = "flow-ai-terraform-state-bucket"
+    key            = "infrastructure/terraform/terraform.tfstate"
+    region         = "sa-east-1"
+    encrypt        = true                                     
+    use_lockfile   = true                                    
+  }
+}
+
 output "instance_public_ip" {
   description = "The public IP address of the EC2 instance"
   value       = aws_instance.flow_ai_instance.public_ip

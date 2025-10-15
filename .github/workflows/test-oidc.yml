@@ -1,0 +1,28 @@
+name: Test AWS OIDC Connection
+
+on:
+  workflow_dispatch:   # allows manual run
+  push:
+    branches: [ main ] # optional — runs on push to main
+
+permissions:
+  id-token: write       # required for OIDC
+  contents: read
+
+jobs:
+  test-oidc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          role-to-assume: arn:aws:iam::909432523311:role/flow-ai-role-github-actions
+          aws-region: sa-east-1
+
+      - name: Verify AWS caller identity
+        run: |
+          echo "Testing AWS OIDC connection..."
+          aws sts get-caller-identity
