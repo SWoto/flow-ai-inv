@@ -18,7 +18,7 @@ jobs:
   terraform-plan:
     runs-on: ubuntu-latest
     name: "Terraform Plan"
-    environment: ${{ env.YML_ENVIROMENT }}
+    environment: development
 
     steps:
       - name: Checkout Repository
