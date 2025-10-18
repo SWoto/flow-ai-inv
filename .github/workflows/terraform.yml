@@ -55,3 +55,39 @@ jobs:
         with:
           name: terraform_plan
           path: ${{ env.TF_WORKING_DIR }}/plan.tfplan
+
+  terraform-apply:
+    runs-on: ubuntu-latest
+    name: "Terraform Apply"
+    needs: [terraform-plan]
+    environment: development 
+    
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/flow-ai-role-github-actions
+          aws-region: ${{ env.AWS_REGION }}
+          role-session-name: github-actions-flow-ai-session
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Download Terraform Plan Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: terraform_plan
+          path: ${{ env.TF_WORKING_DIR }}
+
+      - name: Terraform Init
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform init -input=false
+
+      - name: Terraform Apply
+        working-directory: ${{ env.TF_WORKING_DIR }}
+        run: terraform apply -auto-approve -input=false plan.tfplan
