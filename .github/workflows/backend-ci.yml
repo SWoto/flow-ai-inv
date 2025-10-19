@@ -15,6 +15,8 @@ permissions:
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
+    environment: development
+    
     env:
       BACKEND_DIR: backend
 
