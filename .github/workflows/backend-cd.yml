@@ -27,13 +27,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (OIDC) and assume role
+      - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/flow-ai-role-github-actions
           aws-region: ${{ env.AWS_REGION }}
-          role-session-name: github-actions-flow-ai-session
+          role-session-name: github-actions-flow-ai-backend-cd-session
 
+          
       - name: Login to ECR
         run: |
           aws ecr get-login-password --region $AWS_REGION | \
