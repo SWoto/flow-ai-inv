@@ -1,22 +1,22 @@
 name: Backend CI
 
-on:
-  pull_request:
-    branches:
-      - main
-  push:
-    branches:
-      - main
+on: 
+    workflow_run:
+        workflows: ["Terraform CI/CD"] 
+        branches: [main] 
+        types: [completed]
+    workflow_dispatch:
 
 permissions:
   contents: read
-  id-token: write    # required if you later use OIDC for AWS access in CI
-
+  id-token: write    
+  
 jobs:
   test-and-build:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     environment: development
-    
+
     env:
       BACKEND_DIR: backend
 

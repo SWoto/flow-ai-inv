@@ -15,7 +15,8 @@ resource "aws_security_group" "flow_ai_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${trimspace(data.http.my_ip.response_body)}/32"] 
+    cidr_blocks = ["0.0.0.0/0"]
+    #cidr_blocks = ["${trimspace(data.http.my_ip.response_body)}/32"] 
   }
 
   # Allow HTTP access from my current ip
@@ -24,7 +25,8 @@ resource "aws_security_group" "flow_ai_sg" {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["${trimspace(data.http.my_ip.response_body)}/32"] 
+    cidr_blocks = ["0.0.0.0/0"]
+    #cidr_blocks = ["${trimspace(data.http.my_ip.response_body)}/32"] 
   }
 
   # Allow ICMP from my current IP
@@ -33,7 +35,8 @@ resource "aws_security_group" "flow_ai_sg" {
     from_port        = 8
     to_port          = -1
     protocol         = "icmp"
-    cidr_blocks = ["${trimspace(data.http.my_ip.response_body)}/32"] 
+    cidr_blocks = ["0.0.0.0/0"]
+    #cidr_blocks = ["${trimspace(data.http.my_ip.response_body)}/32"] 
     ipv6_cidr_blocks = []
   }
 
