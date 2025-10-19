@@ -23,7 +23,8 @@
             "Action": [
                 "ec2:*", 
                 "rds:*",
-                "ssm:GetParameter" 
+                "ssm:GetParameter",
+                "ecr:*"
             ],
             "Resource": "*"
         }

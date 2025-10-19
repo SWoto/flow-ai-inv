@@ -39,4 +39,4 @@ aws iam create-policy \
 # Attach the Policy to the OIDC Role
 aws iam attach-role-policy \
   --role-name flow-ai-role-github-actions \
-  --policy-arn arn:aws:iam::909439523317:policy/flow-ai-terraform-deploy-policy
+  --policy-arn arn:aws:iam::***:policy/flow-ai-terraform-deploy-policy
