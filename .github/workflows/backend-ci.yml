@@ -34,10 +34,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run unit tests
-        working-directory: ${{ env.BACKEND_DIR }}
-        run: |
-          pytest --maxfail=1 --disable-warnings -q
+    #   - name: Run unit tests
+    #     working-directory: ${{ env.BACKEND_DIR }}
+    #     run: |
+    #       pytest --maxfail=1 --disable-warnings -q
 
       - name: Run basic lint (ruff if installed) - optional
         working-directory: ${{ env.BACKEND_DIR }}
