@@ -1,0 +1,72 @@
+name: Backend CD
+
+workflow_run:
+    workflows: ["Backend CI"] 
+    branches: [main] 
+    types: [completed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+
+env:
+  AWS_REGION: sa-east-1
+  BACKEND_DIR: backend
+  IMAGE_TAG: ${{ github.sha }}
+  ECR_REPOSITORY: flow-ai-inv-ecr
+
+jobs:
+  build-push-deploy:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC) and assume role
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}       # required: GitHub -> AWS OIDC role
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to ECR
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | \
+          docker login --username AWS --password-stdin \
+          "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com"
+
+
+      - name: Build Docker image
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: |
+          docker build -t ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} .
+
+      - name: Tag Docker image
+        run: |
+          ECR_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}"
+          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} $ECR_URI:${{ env.IMAGE_TAG }}
+          docker tag ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} $ECR_URI:latest
+
+      - name: Push Docker image to ECR
+        run: |
+          ECR_URI="${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}"
+          docker push $ECR_URI:${{ env.IMAGE_TAG }}
+          docker push $ECR_URI:latest
+
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.6.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -eux
+            ECR_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}
+            docker login -u AWS -p $(aws ecr get-login-password --region ${{ env.AWS_REGION }}) $ECR_URI
+            docker pull $ECR_URI:${{ env.IMAGE_TAG }}
+            docker stop flow-ai-inv || true
+            docker rm flow-ai-inv || true
+            docker run -d --name flow-ai-inv -p 80:8000 --restart unless-stopped $ECR_URI:${{ env.IMAGE_TAG }}

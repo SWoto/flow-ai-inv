@@ -26,3 +26,8 @@ output "db_instance_address" {
   description = "The address of the PostgreSQL database endpoint"
   value       = aws_db_instance.flow_ai_db.address
 }
+
+output "ecr_repository_url" {
+  description = "The full URL for the ECR repository."
+  value       = aws_ecr_repository.backend_repo.repository_url
+}

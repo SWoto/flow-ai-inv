@@ -1,0 +1,61 @@
+name: Backend CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  id-token: write    # required if you later use OIDC for AWS access in CI
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    env:
+      BACKEND_DIR: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: 'pip'
+
+      - name: Install Python deps (for tests)
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run unit tests
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: |
+          pytest --maxfail=1 --disable-warnings -q
+
+      - name: Run basic lint (ruff if installed) - optional
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: |
+          if grep -q "ruff" requirements.txt 2>/dev/null; then
+            pip install ruff
+            ruff check .
+          else
+            echo "ruff not present in requirements.txt — skipping lint step"
+          fi
+
+      - name: Validate Dockerfile (build locally)
+        working-directory: ${{ env.BACKEND_DIR }}
+        run: |
+          docker build -t flow-ai-inv-ci:latest .
+
+      - name: Save Docker image as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image-${{ github.sha }}
+          path: /var/lib/docker/volumes/
