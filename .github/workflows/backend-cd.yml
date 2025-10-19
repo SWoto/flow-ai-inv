@@ -30,8 +30,9 @@ jobs:
       - name: Configure AWS credentials (OIDC) and assume role
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}       # required: GitHub -> AWS OIDC role
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/flow-ai-role-github-actions
           aws-region: ${{ env.AWS_REGION }}
+          role-session-name: github-actions-flow-ai-session
 
       - name: Login to ECR
         run: |
