@@ -65,7 +65,7 @@ jobs:
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
-          key: ${{ secrets.SSH_PUBLIC_KEY }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             set -eux
             ECR_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}

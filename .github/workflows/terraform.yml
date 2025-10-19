@@ -100,8 +100,8 @@ jobs:
           # Set the GitHub PAT as a local environment variable for the gh command
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: |
-          EC2_IP=$(terraform output -json | jq -r '.instance_public_ip.value')
+          EC2_PUB_DNS=$(terraform output -json | jq -r '.instance_public_DNS.value')
           
-          echo "Extracted EC2 IP: $EC2_IP"
+          echo "Extracted EC2 DNS: $EC2_PUB_DNS"
           
-          gh secret set EC2_HOST -b "$EC2_IP"
+          gh secret set EC2_HOST -b "$EC2_PUB_DNS"
