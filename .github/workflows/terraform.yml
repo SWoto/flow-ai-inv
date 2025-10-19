@@ -95,9 +95,8 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y jq
         
       - name: Extract IP and Update EC2_HOST Secret via GitHub CLI
-        working-directory: ${{ env.TF_WORKING_DIR }} # Required to find state file
+        working-directory: ${{ env.TF_WORKING_DIR }} #
         env:
-          # Set the GitHub PAT as a local environment variable for the gh command
           GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           EC2_PUB_DNS=$(terraform output -json | jq -r '.instance_public_DNS.value')
