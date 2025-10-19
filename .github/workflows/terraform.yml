@@ -12,7 +12,6 @@ permissions:
 env:
   AWS_REGION: sa-east-1 
   TF_WORKING_DIR: infrastructure
-  YML_ENVIROMENT: development
   TF_VAR_db_username: ${{ secrets.DB_USERNAME }}
   TF_VAR_db_password: ${{ secrets.DB_PASSWORD }} 
 
@@ -95,16 +94,14 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
         
-      - name: Extract EC2 Public IP from Terraform Output
-        id: get_ip
-        working-directory: ${{ env.TF_WORKING_DIR }}
+      - name: Extract IP and Update EC2_HOST Secret via GitHub CLI
+        working-directory: ${{ env.TF_WORKING_DIR }} # Required to find state file
+        env:
+          # Set the GitHub PAT as a local environment variable for the gh command
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
         run: |
           EC2_IP=$(terraform output -json | jq -r '.instance_public_ip.value')
-          echo "EC2_IP=$EC2_IP" >> $GITHUB_OUTPUT
-        
-      - name: Update EC2_HOST GitHub Secret
-        uses: peter-evans/create-or-update-secret@v3
-        with:
-          token: ${{ secrets.GH_PAT }}
-          secret_name: EC2_HOST
-          secret_value: ${{ steps.get_ip.outputs.EC2_IP }}
+          
+          echo "Extracted EC2 IP: $EC2_IP"
+          
+          gh secret set EC2_HOST -b "$EC2_IP"
