@@ -104,7 +104,6 @@ jobs:
         
       - name: Update EC2_HOST GitHub Secret
         uses: peter-evans/create-or-update-secret@v3
-        working-directory: ${{ env.TF_WORKING_DIR }}
         with:
           token: ${{ secrets.GH_PAT }}
           secret_name: EC2_HOST
