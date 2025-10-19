@@ -16,7 +16,7 @@ env:
   AWS_REGION: sa-east-1
   BACKEND_DIR: backend
   IMAGE_TAG: ${{ github.sha }}
-  ECR_REPOSITORY: flow-ai-inv-ecr
+  ECR_REPOSITORY: flow-ai-inv
 
 jobs:
   build-push-deploy:
