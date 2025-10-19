@@ -1,5 +1,5 @@
 resource "aws_ecr_repository" "backend" {
-  name = "flow-ai-inv-ecr"
+  name = "flow-ai-inv"
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {

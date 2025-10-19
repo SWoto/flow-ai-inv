@@ -29,5 +29,5 @@ output "db_instance_address" {
 
 output "ecr_repository_url" {
   description = "The full URL for the ECR repository."
-  value       = aws_ecr_repository.backend_repo.repository_url
+  value       = aws_ecr_repository.backend.repository_url
 }
