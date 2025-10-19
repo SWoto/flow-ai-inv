@@ -103,4 +103,4 @@ jobs:
           
           echo "Extracted EC2 DNS: $EC2_PUB_DNS"
           
-          gh secret set EC2_HOST -b "$EC2_PUB_DNS"
+          gh secret set EC2_HOST --env development "$EC2_PUB_DNS"
