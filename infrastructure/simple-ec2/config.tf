@@ -1,6 +1,6 @@
 provider "aws" {
   profile = "default"
-  region = var.aws_region
+  region = "sa-east-1"
 }
 
 output "instance_public_ip" {
