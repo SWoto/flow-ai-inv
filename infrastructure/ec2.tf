@@ -18,7 +18,12 @@ resource "aws_instance" "flow_ai_instance" {
   vpc_security_group_ids = [aws_security_group.flow_ai_sg.id]
 
   iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
-  
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
+
   tags = {
     Name = "flow-ai-inv-ec2"
     Tag  = "flow-ai-inv"
@@ -73,7 +78,27 @@ resource "aws_instance" "flow_ai_instance" {
         echo "Docker Compose is already installed or 'docker compose' plugin is available."
     fi
 
-    echo "Setup complete. Git, Docker and Docker Compose are ready to use."
+    # Install AWS CLI v2 if not present
+    if ! command -v aws &> /dev/null; then
+        echo "AWS CLI not found. Installing AWS CLI v2..."
+        # Install unzip if not present
+        if ! command -v unzip &> /dev/null; then
+            dnf install unzip -y
+        fi
+        curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+        unzip awscliv2.zip
+        sudo ./aws/install
+        rm -rf aws awscliv2.zip
+        echo "AWS CLI v2 installed."
+    else
+        echo "AWS CLI is already installed."
+    fi
+
+    # Configure AWS CLI to use IAM role (no need for access keys)
+    # The EC2 instance will automatically use the IAM role credentials
+    echo "AWS CLI configured to use IAM role credentials."
+
+    echo "Setup complete. Git, Docker, Docker Compose, and AWS CLI are ready to use."
     EOF
   # End user_data
 
