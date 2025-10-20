@@ -27,6 +27,32 @@
                 "ecr:*"
             ],
             "Resource": "*"
+        },
+        {
+            "Sid": "AllowIAMRoleAndPolicyManagement",
+            "Effect": "Allow",
+            "Action": [
+                "iam:CreatePolicy",
+                "iam:DeletePolicy",
+                "iam:CreateRole",
+                "iam:DeleteRole",
+                "iam:AttachRolePolicy",
+                "iam:DetachRolePolicy",
+                "iam:CreateInstanceProfile",
+                "iam:DeleteInstanceProfile",
+                "iam:AddRoleToInstanceProfile",
+                "iam:RemoveRoleFromInstanceProfile",
+                "iam:GetRole",
+                "iam:GetPolicy",
+                "iam:GetInstanceProfile",
+                "iam:GetPolicyVersion",
+                "iam:ListRolePolicies",
+                "iam:ListAttachedRolePolicies",
+                "iam:ListPolicyVersions",
+                "iam:ListInstanceProfilesForRole",
+                "iam:PassRole"
+            ],
+            "Resource": "*"
         }
     ]
 }

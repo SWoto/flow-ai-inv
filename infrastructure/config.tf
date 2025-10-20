@@ -1,12 +1,12 @@
 provider "aws" {
-  region = "sa-east-1"
+  region = var.aws_region
 }
 
 terraform {
   backend "s3" {
     bucket         = "flow-ai-terraform-state-bucket"
     key            = "infrastructure/terraform/terraform.tfstate"
-    region         = "sa-east-1"
+    region         = var.aws_region
     encrypt        = true                                     
     use_lockfile   = true                                    
   }
