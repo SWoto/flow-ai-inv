@@ -16,6 +16,13 @@ resource "aws_instance" "flow_ai_instance" {
   
   subnet_id     = aws_subnet.flow_ai_subnet_public.id
   vpc_security_group_ids = [aws_security_group.flow_ai_sg.id]
+
+  iam_instance_profile = aws_iam_instance_profile.ec2_instance_profile.name
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+  }
   
   tags = {
     Name = "flow-ai-inv-ec2"
